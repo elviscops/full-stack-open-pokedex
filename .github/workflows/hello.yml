@@ -15,6 +15,6 @@ jobs:
     steps:
       - name: Now it is
         run: date
-    setps:
+    steps:
       - name: Directory contents
         run: ls -l
