@@ -1,10 +1,8 @@
 name: Deployment pipeline
-
 on:
   push:
     branches:
       - main
-
 jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
@@ -15,5 +13,5 @@ jobs:
           node-version: '20'
       - name: Install dependencies 
         run: npm install  
-      - name: Check style
+      - name: Linting
         run: npm run eslint
