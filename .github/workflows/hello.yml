@@ -14,3 +14,5 @@ jobs:
           echo "Hello World!"
       - name: Now it is
         run: date
+      - name: Directoyry contents
+        run: ls -l
