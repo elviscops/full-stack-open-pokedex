@@ -33,9 +33,6 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
-  /* Exclude Jest unit test files from Playwright */
-  testIgnore: ['**/*.jest.spec.*'],
-
   /* Configure projects for major browsers */
   projects: [
     {
