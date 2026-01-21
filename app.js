@@ -7,8 +7,7 @@ const PORT = process.env.PORT || 5001
 app.use(express.static('dist'))
 
 app.get('/version', (req, res) => {
-    console.log('version endpoint called')
-    res.send('1')
+  res.send('1')
 })
 
 app.listen(PORT, () => {
