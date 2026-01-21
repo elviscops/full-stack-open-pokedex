@@ -1,5 +1,9 @@
 #!/bin/bash
 
-echo "Build script"
+echo "Installing dependencies..."
+npm install
 
-# add the commands here
+echo "Building frontend..."
+npm run build
+
+echo "Build complete."
