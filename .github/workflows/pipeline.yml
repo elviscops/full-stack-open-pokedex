@@ -51,39 +51,39 @@ jobs:
           DEFAULT_BUMP: major
           RELEASE_BRANCHES: main
 
-    notify_discord:
-      needs: [ lint, test, deploy, tag_release ]
-      runs-on: ubuntu-latest
-      if: ${{ success() }}
-      #if: ${{ false }}
-      steps:
-        - name: Deploy Succeeded
-          uses: rjstone/discord-webhook-notify@v2
-          with:
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-            username: Custom Bot Username
-            text: Below this normal-looking message is an embed!
-            severity: info # only to make sure the embed is added
-            color: '#00ff00'
-            title: My Fancy Embed Title
-            description: "This is a ***SuPeR custom*** description. I hope it looks good."
-            # details: not needed because we overrode default description.
-            footer: This embed was brought to you by the letter R and the number 4.
-    notify_failure:
-      needs: [ lint, test, deploy, tag_release ]
-      runs-on: ubuntu-latest
-      if: ${{ failure() }}
-      #if: ${{ false }}
-      steps:
-        - name: Build Failed
-          uses: rjstone/discord-webhook-notify@v2
-          with:
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-            username: Custom Bot Username
-            text: Below this normal-looking message is an embed!
-            severity: info # only to make sure the embed is added
-            color: '#ff0000'
-            title: My Fancy Embed Title
-            description: "This is a ***SuPeR custom*** description. I hope it looks good."
-            # details: not needed because we overrode default description.
-            footer: This embed was brought to you by the letter R and the number 4.
+  discord-notify:
+    needs: [ simple_deployment_pipeline, tag_release ]
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    #if: ${{ false }}
+    steps:
+      - name: Deploy Succeeded
+        uses: rjstone/discord-webhook-notify@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Custom Bot Username
+          text: Below this normal-looking message is an embed!
+          severity: info # only to make sure the embed is added
+          color: '#00ff00'
+          title: My Fancy Embed Title
+          description: "This is a ***SuPeR custom*** description. I hope it looks good."
+          # details: not needed because we overrode default description.
+          footer: This embed was brought to you by the letter R and the number 4.
+  notify_failure:
+    needs: [ simple_deployment_pipeline, tag_release ]
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    #if: ${{ false }}
+    steps:
+      - name: Build Failed
+        uses: rjstone/discord-webhook-notify@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Custom Bot Username
+          text: Below this normal-looking message is an embed!
+          severity: info # only to make sure the embed is added
+          color: '#ff0000'
+          title: My Fancy Embed Title
+          description: "This is a ***SuPeR custom*** description. I hope it looks good."
+          # details: not needed because we overrode default description.
+          footer: This embed was brought to you by the letter R and the number 4.
