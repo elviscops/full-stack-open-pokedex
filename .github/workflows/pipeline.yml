@@ -10,7 +10,6 @@ jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
     steps:
-
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -26,8 +25,9 @@ jobs:
       - name: Create deployment
         if: ${{ github.event_name == 'push' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+
   tag_release:
-    needs: [ simple_deployment_pipeline ]
+    needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,39 +51,38 @@ jobs:
           DEFAULT_BUMP: major
           RELEASE_BRANCHES: main
 
-  discord-notify:
-    needs: [ simple_deployment_pipeline, tag_release ]
+  notify_success:
+    needs: [simple_deployment_pipeline, tag_release]
     runs-on: ubuntu-latest
     if: ${{ success() }}
-    #if: ${{ false }}
     steps:
-      - name: Deploy Succeeded
-        uses: rjstone/discord-webhook-notify@v2
+      - name: Notify Success
+        uses: actions-status-discord@v1.0.0
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: Custom Bot Username
-          text: Below this normal-looking message is an embed!
-          severity: info # only to make sure the embed is added
-          color: '#00ff00'
-          title: My Fancy Embed Title
-          description: "This is a ***SuPeR custom*** description. I hope it looks good."
-          # details: not needed because we overrode default description.
-          footer: This embed was brought to you by the letter R and the number 4.
+          title: "Deployment Succeeded"
+          description: "The deployment was successful!"
+          color: "00ff00"
+          fields: |
+            - name: Repository
+              value: ${{ github.repository }}
+            - name: Commit
+              value: ${{ github.sha }}
+
   notify_failure:
-    needs: [ simple_deployment_pipeline, tag_release ]
+    needs: [simple_deployment_pipeline, tag_release]
     runs-on: ubuntu-latest
     if: ${{ failure() }}
-    #if: ${{ false }}
     steps:
-      - name: Build Failed
-        uses: rjstone/discord-webhook-notify@v2
+      - name: Notify Failure
+        uses: actions-status-discord@v1.0.0
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: Custom Bot Username
-          text: Below this normal-looking message is an embed!
-          severity: info # only to make sure the embed is added
-          color: '#ff0000'
-          title: My Fancy Embed Title
-          description: "This is a ***SuPeR custom*** description. I hope it looks good."
-          # details: not needed because we overrode default description.
-          footer: This embed was brought to you by the letter R and the number 4.
+          title: "Deployment Failed"
+          description: "The deployment has failed!"
+          color: "ff0000"
+          fields: |
+            - name: Repository
+              value: ${{ github.repository }}
+            - name: Commit
+              value: ${{ github.sha }}
