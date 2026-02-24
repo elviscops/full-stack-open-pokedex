@@ -10,7 +10,6 @@ jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
     steps:
-
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -26,8 +25,9 @@ jobs:
       - name: Create deployment
         if: ${{ github.event_name == 'push' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+
   tag_release:
-    needs: [ simple_deployment_pipeline ]
+    needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,3 +50,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: major
           RELEASE_BRANCHES: main
+
+  notify_success:
+    needs: [ simple_deployment_pipeline, tag_release ]
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Notify Success
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          content: "Hey <@316911818725392384>"
+          title: "Deploy"
+          description: "Build and deploy to GitHub Pages"
+          color: 0x0000ff
+          url: "https://github.com/sarisia/actions-status-discord"
+          username: GitHub Actions
+
+  notify_failure:
+    needs: [ simple_deployment_pipeline, tag_release ]
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    steps:
+      - name: Notify Failure
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          content: "Hey <@316911818725392384>"
+          title: "Deployment Failed"
+          description: "The deployment encountered an error."
+          color: 0xff0000
+          url: "https://github.com/sarisia/actions-status-discord"
+          username: GitHub Actions
+
